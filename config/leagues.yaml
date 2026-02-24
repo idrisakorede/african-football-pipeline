@@ -1,0 +1,29 @@
+# config/leagues.yaml
+# League definitions for the African football pipeline.
+# Required fields: code, name, country, slug, fetch_halftime
+# Optional flags default to false if omitted.
+
+leagues:
+  - code: npfl
+    name: Nigeria Professional Football League
+    country: Nigeria
+    slug: npfl
+    fetch_halftime: true
+
+  - code: nnl
+    name: Nigeria National League
+    country: Nigeria
+    slug: nnl
+    fetch_halftime: false
+
+  - code: gh_pl
+    name: Ghana Premier League
+    country: Ghana
+    slug: premier-league
+    fetch_halftime: true
+
+  - code: eg_pl
+    name: Egypt Premier League
+    country: Egypt
+    slug: premier-league
+    fetch_halftime: true
