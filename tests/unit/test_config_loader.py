@@ -8,8 +8,8 @@ and incomplete league entries.
 
 import pytest
 
-from src.config_loader import load_leagues
-from src.models import LeagueConfig
+from african_football.config.config_loader import load_leagues
+from african_football.models.league_model import LeagueConfig
 from tests.conftest import write_yaml
 
 

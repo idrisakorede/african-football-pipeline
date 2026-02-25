@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 
-from src.models import LeagueConfig
+from african_football.models.league_model import LeagueConfig
 
 
 def load_leagues(config_path: str | Path) -> list[LeagueConfig]:
