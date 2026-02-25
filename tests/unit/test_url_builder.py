@@ -18,7 +18,7 @@ class TestBuildUrlSplit:
 
     def test_returns_correct_format(self):
         url = build_url_split("nigeria", "npfl", 2024, 2025)
-        assert url == f"{BASE_URL}/nigeria/npfl-2024-2025/results"
+        assert url == f"{BASE_URL}/nigeria/npfl-2024-2025/results/"
 
     def test_include_country_and_slug_and_both_years(self):
         url = build_url_split("ghana", "premier-league", 2024, 2025)
