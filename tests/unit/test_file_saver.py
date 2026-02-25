@@ -140,6 +140,24 @@ class TestFormatScore:
         }
         assert _format_score(match) == "vs"
 
+    def test_zero_zero_scoreline_renders_correctly(self):
+        match = {
+            "home_score": "0",
+            "away_score": "0",
+            "penalty_shootout": False,
+            "half_time_score": None,
+        }
+        assert _format_score(match) == "0-0"
+
+    def test_integer_zero_score(self):
+        match = {
+            "home_score": 0,
+            "away_score": 0,
+            "penalty_shootout": False,
+            "half_time_score": None,
+        }
+        assert _format_score(match) == "0-0"
+
 
 # ------------------------------- Round Header Formatting ---------------------------------------
 
