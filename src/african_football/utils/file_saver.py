@@ -302,24 +302,30 @@ def _format_round_header(round_name: str) -> str:
 
 def _format_score(match: dict) -> str:
     """
-    Format the score string for a match in TXT output.
+    Format the score string for a match in TXT export.
 
-    Handles three cases: penalty shootouts (shows pen result and FT score),
-    regular matches with halftime scores, and regular matches without.
+    Handles three cases:
+    - Penalty shootouts: shows pen result, full-time score, and halftime score
+    - Regular matches with halftime scores
+    - Regular matches without halftime scores
+
+    Format for penalties: '4-3 pen (2-2 aet; 1-1)'
+    Format for regular:   '2-1 (1-0)'
 
     Args:
         match: A match dictionary containing score and metadata fields.
 
     Returns:
-        A formatted score string (e.g. '2-1', '2-1 (1-0)', '3-2 pen (2-2)').
+        A formatted score string or 'vs' if scores are unavailable.
     """
     if match.get("penalty_shootout") and match.get("full_time_score"):
-        return (
-            f"{match['home_score']}-{match['away_score']} pen "
-            f"({match['full_time_score']})"
-        )
+        base = f"{match['home_score']}-{match['away_score']} pen"
+        fulltime = match["full_time_score"]
+        halftime = match["half_time_score"]
+        detail = f"{fulltime} aet; {halftime}" if halftime else fulltime
+        return f"{base} ({detail})"
 
-    if match["home_score"] and match["away_score"]:
+    if match.get("home_score") and match.get("away_score"):
         score = f"{match['home_score']}-{match['away_score']}"
         if match.get("half_time_score"):
             score += f" ({match['half_time_score']})"
