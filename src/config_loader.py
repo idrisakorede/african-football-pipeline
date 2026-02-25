@@ -93,6 +93,7 @@ def _parse_league_entry(entry: dict) -> LeagueConfig:
         country=entry["country"],
         slug=entry["slug"],
         fetch_halftime=entry["fetch_haltime"],
+        submission_code=entry.get("submission_code", ""),
         fetch_venue=entry.get("fetch_venue", False),
         fetch_lineups=entry.get("fetch_lineups", False),
         fetch_scorers=entry.get("fetch_scorers", False),
