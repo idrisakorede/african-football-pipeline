@@ -30,6 +30,7 @@ class LeagueConfig:
     country: str
     slug: str
     fetch_halftime: bool
+    submission_code: str = ""
     fetch_venue: bool = False
     fetch_lineups: bool = False
     fetch_scorers: bool = False
