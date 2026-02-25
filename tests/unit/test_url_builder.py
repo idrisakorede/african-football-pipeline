@@ -6,7 +6,11 @@ resolve_url is not unit tested here as it requires network access
 and belongs in integration tests.
 """
 
-from src.url_builder import BASE_URL, build_url_single, build_url_split
+from african_football.scraping.url_builder import (
+    BASE_URL,
+    build_url_single,
+    build_url_split,
+)
 
 
 class TestBuildUrlSplit:

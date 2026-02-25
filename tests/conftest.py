@@ -8,7 +8,7 @@ without needing to import them explicitly.
 import pytest
 import yaml
 
-from src.models import LeagueConfig
+from african_football.models.league_model import LeagueConfig
 
 
 @pytest.fixture

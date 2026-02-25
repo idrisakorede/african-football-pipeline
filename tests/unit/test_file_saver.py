@@ -6,8 +6,8 @@ formatting, checksum generation, and score formatting.
 save_json and save_txt integration is covered in integration tests.
 """
 
-from src.models import LeagueConfig
-from utils.file_saver import (
+from african_football.models.league_model import LeagueConfig
+from african_football.utils.file_saver import (
     _build_json_path,
     _build_season_str,
     _build_txt_path,

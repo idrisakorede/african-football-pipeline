@@ -20,7 +20,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from src.models import LeagueConfig
+from african_football.models.league_model import LeagueConfig
 
 # Playoff round display order for TXT formatting
 PLAYOFF_ROUND_ORDER: dict[str, int] = {
