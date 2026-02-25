@@ -9,21 +9,25 @@ leagues:
     country: Nigeria
     slug: npfl
     fetch_halftime: true
+    submission_code: ng1
 
   - code: nnl
     name: Nigeria National League
     country: Nigeria
     slug: nnl
     fetch_halftime: false
+    submission_code: ng2
 
   - code: gh_pl
     name: Ghana Premier League
     country: Ghana
     slug: premier-league
     fetch_halftime: true
+    submission_code: gh1
 
   - code: eg_pl
     name: Egypt Premier League
     country: Egypt
     slug: premier-league
     fetch_halftime: true
+    submission_code: eg1
