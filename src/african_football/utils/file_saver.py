@@ -311,6 +311,7 @@ def _format_score(match: dict) -> str:
 
     Format for penalties: '4-3 pen (2-2 aet; 1-1)'
     Format for regular:   '2-1 (1-0)'
+    Format for 0-0: '0-0'
 
     Args:
         match: A match dictionary containing score and metadata fields.
@@ -322,12 +323,12 @@ def _format_score(match: dict) -> str:
         base = f"{match['home_score']}-{match['away_score']} pen"
         fulltime = match["full_time_score"]
         halftime = match["half_time_score"]
-        detail = f"{fulltime} aet; {halftime}" if halftime else fulltime
+        detail = f"{fulltime} aet; {halftime}" if halftime is not None else fulltime
         return f"{base} ({detail})"
 
-    if match.get("home_score") and match.get("away_score"):
+    if match.get("home_score") is not None and match.get("away_score") is not None:
         score = f"{match['home_score']}-{match['away_score']}"
-        if match.get("half_time_score"):
+        if match.get("half_time_score") is not None:
             score += f" ({match['half_time_score']})"
         return score
 
