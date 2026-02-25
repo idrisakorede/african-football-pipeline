@@ -111,15 +111,25 @@ class TestFormatScore:
         }
         assert _format_score(match) == "2-1 (1-0)"
 
-    def test_score_with_penalty_shootout(self):
+    def test_score_with_penalty_shootout_and_halftime(self):
         match = {
-            "home_score": "2",
-            "away_score": "1",
+            "home_score": "4",
+            "away_score": "3",
             "penalty_shootout": True,
-            "full_time_score": "1-1",
-            "half_time_score": "0-0",
+            "full_time_score": "2-2",
+            "half_time_score": "1-1",
         }
-        assert _format_score(match) == "2-1 pen (1-1)"
+        assert _format_score(match) == "4-3 pen (2-2 aet; 1-1)"
+
+    def test_score_with_penalty_shootout_no_halftime(self):
+        match = {
+            "home_score": "4",
+            "away_score": "3",
+            "penalty_shootout": True,
+            "full_time_score": "2-2",
+            "half_time_score": None,
+        }
+        assert _format_score(match) == "4-3 pen (2-2)"
 
     def test_missing_scores_returns_vs(self):
         match = {
