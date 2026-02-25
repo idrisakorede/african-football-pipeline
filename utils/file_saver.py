@@ -109,7 +109,12 @@ def _build_txt_path(
         A Path object for the TXT output file.
     """
     season_str = _build_season_str(start_year, end_year)
-    return Path(base_dir) / league.country / league.code / f"{season_str}.txt"
+    filename = (
+        f"{season_str}_{league.submission_code}.txt"
+        if league.submission_code
+        else f"{season_str}.txt"
+    )
+    return Path(base_dir) / league.country / league.code / filename
 
 
 def save_json(
@@ -156,8 +161,8 @@ def save_json(
     # Attach checksum for CDC and auditability
     data_copy["checksum"] = _compute_checksum(data_copy)
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(data_copy, f, indent=2, ensure_ascii=False)
+    with open(output_path, "w", encoding="utf-8") as file:
+        json.dump(data_copy, file, indent=2, ensure_ascii=False)
 
     return output_path
 
@@ -195,24 +200,24 @@ def save_txt(
         m["away_team"] for m in all_matches
     }
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(f"= {data['season']}\n")
-        f.write(f"# Teams      {len(teams)}\n")
-        f.write(f"# Matches    {len(all_matches)}\n")
+    with open(output_path, "w", encoding="utf-8") as file:
+        file.write(f"= {data['season']}\n")
+        file.write(f"# Teams      {len(teams)}\n")
+        file.write(f"# Matches    {len(all_matches)}\n")
 
         if len(data["stages"]) > 1:
             stage_info = "  ".join(
                 f"{s['stage_name']} ({s['total_matches']})"
                 for s in reversed(data["stages"])
             )
-            f.write(f"# Stages     {stage_info}\n")
+            file.write(f"# Stages     {stage_info}\n")
 
-        f.write("\n")
+        file.write("\n")
 
         for stage in reversed(data["stages"]):
             if len(data["stages"]) > 1:
                 sep = "=" * 70
-                f.write(f"\n{sep}\n  {stage['stage_name'].upper()}\n{sep}\n\n")
+                file.write(f"\n{sep}\n  {stage['stage_name'].upper()}\n{sep}\n\n")
 
             rounds = defaultdict(list)
             for m in stage["matches"]:
@@ -225,7 +230,7 @@ def save_txt(
             )
 
             for round_name, round_matches in sorted_rounds:
-                f.write(f"» {_format_round_header(round_name)}\n")
+                file.write(f"» {_format_round_header(round_name)}\n")
 
                 dates = defaultdict(list)
                 for m in sorted(round_matches, key=lambda x: x.get("date") or ""):
@@ -233,7 +238,7 @@ def save_txt(
                     dates[date].append(m)
 
                 for date in sorted(dates.keys()):
-                    f.write(f"  {date}\n")
+                    file.write(f"  {date}\n")
                     for m in dates[date]:
                         time = (
                             m["date"].split()[1]
@@ -241,11 +246,11 @@ def save_txt(
                             else "15.00"
                         )
                         score = _format_score(m)
-                        f.write(
+                        file.write(
                             f"    {time:6} {m['home_team']:24} v "
                             f"{m['away_team']:24} {score}\n"
                         )
-                f.write("\n")
+                file.write("\n")
 
     return output_path
 
