@@ -1,13 +1,14 @@
 """
 test_url_builder.py — Unit tests for URL construction utilities.
 
-Tests cover both URL format builders and the BASE_URL constant.
+Tests cover both URL format builders, archive url builder and the BASE_URL constant.
 resolve_url is not unit tested here as it requires network access
 and belongs in integration tests.
 """
 
 from african_football.scraping.url_builder import (
     BASE_URL,
+    build_archive_url,
     build_url_single,
     build_url_split,
 )
@@ -61,3 +62,14 @@ class TestBuildUrlSingle:
     def test_starts_with_base_url(self):
         url = build_url_single("egypt", "premier-league", 2018)
         assert url.startswith(BASE_URL)
+
+
+class TestBuildArchiveUrl:
+    """Tests for the archive URL biulder."""
+
+    def test_returns_correct_format(self):
+        url = build_archive_url("south-africa", "betway-premiership")
+        assert url == f"{BASE_URL}/south-africa/betway-premiership/archive/"
+        assert "south-africa" in url
+        assert "betway-premiership" in url
+        assert url.endswith("/archive/")

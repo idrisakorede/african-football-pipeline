@@ -1,14 +1,15 @@
 """
 url_builder.py - Soccerway URL construction and resolution.
 
-Provides utilities for building and validation Soccerway league URLs.
+Provides utilities for building and validation Soccerway league and league archives URLs.
 Handles both spilt-year (2024-2025) and single-year (2024) URL formats,
 and resolves which format a given league and season uses by probing the live URLs
 
 Typical usage:
-    from src.url_builder import resolve_url
+    from src.url_builder import resolve_url, build_archive_url
 
     url = resolve_url(country='nigeria', slug='npfl', year=2024)
+    archive_url = build_archive_url(country='nigeria', slug='npfl')
 """
 
 import requests
@@ -102,3 +103,21 @@ def resolve_url(country: str, slug: str, year: int) -> str | None:
             return url
 
     return None
+
+
+def build_archive_url(country: str, slug: str) -> str:
+    """
+    Build the Soccerway archive URL for a league.
+
+    The archive page lists all available seasons with their URLs
+    and champions. Used by SeasonDiscoverer to enumerate seasons
+    without hardcoding them.
+
+    Args:
+        country: Country slug as it appears in Soccerway URLs.
+        slug:    League slug as it appears in Soccerway URLs.
+
+    Returns:
+        A fully formed Soccerway archive URL string.
+    """
+    return f"{BASE_URL}/{country}/{slug}/archive/"
