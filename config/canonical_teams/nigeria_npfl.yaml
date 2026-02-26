@@ -1,0 +1,308 @@
+# config/canonical_teams/nigeria_npfl.yaml
+# Canonical team names for the Nigeria Professional Football League.
+# Aliases are spelling / naming variants that should normalize to canonical.
+
+teams:
+  - canonical: ABS FC
+    slug: abs
+    aliases:
+      - ABS
+      - ABS Ilorin
+      - ABS Football Club
+
+  - canonical: Abia Warriors FC
+    slug: abia-warriors
+    aliases:
+      - Abia Warriors
+      - Abia Warriors Football Club
+
+  - canonical: Adamawa United FC
+    slug: adamawa-united
+    aliases:
+      - Adamawa United
+      - Adamawa United Football Club
+
+  - canonical: Akwa United FC
+    slug: akwa-united
+    aliases:
+      - Akwa United
+      - Akwa United Football Club
+
+  - canonical: Bayelsa United FC
+    slug: bayelsa-united
+    aliases:
+      - Bayelsa United
+      - Bayelsa United Football Club
+
+  - canonical: Bendel FC
+    slug: bendel
+    aliases:
+      - Bendel Football Club
+      - Bendel Insurance
+      - Bendel Insurance FC
+
+  - canonical: Crown FC
+    slug: crown
+    aliases:
+      - Crown FC Ogbomosho
+      - Crown Football Club
+
+  - canonical: Dakkada FC
+    slug: dakkada
+    aliases:
+      - Dakkada
+      - Dakkada Football Club
+
+  - canonical: Delta Force FC
+    slug: delta-force
+    aliases:
+      - Delta Force
+      - Delta Force Football Club
+
+  - canonical: Dolphins FC
+    slug: dolphins
+    aliases:
+      - Dolphins
+      - Dolphins Football Club
+      - Dolphins of Port Harcourt
+
+  - canonical: Doma United FC
+    slug: doma-united
+    aliases:
+      - Doma United
+      - Doma United Football Club
+
+  - canonical: El-Kanemi Warriors FC
+    slug: el-kanemi
+    aliases:
+      - El Kanemi Warriors
+      - El-Kanemi Warriors
+      - El Kanemi Warriors FC
+
+  - canonical: Enyimba FC
+    slug: enyimba
+    aliases:
+      - Enyimba
+      - Enyimba International
+      - Enyimba International FC
+      - Enyimba Int'l FC
+      - Enyimba FC Aba
+
+  - canonical: Gateway United FC
+    slug: gateway-united
+    aliases:
+      - Gateway United
+      - Gateway United Football Club
+
+  - canonical: Giwa FC
+    slug: giwa
+    aliases:
+      - Giwa
+      - Giwa Football Club
+
+  - canonical: Go Round FC
+    slug: go-round
+    aliases:
+      - Go Round
+      - Go-Round FC
+      - Go Round Football Club
+
+  - canonical: Gombe United FC
+    slug: gombe-united
+    aliases:
+      - Gombe United
+      - Gombe United Football Club
+
+  - canonical: Heartland FC
+    slug: heartland
+    aliases:
+      - Heartland
+      - Heartland Football Club
+      - Heartland Owerri
+
+  - canonical: Ifeanyi Ubah FC
+    slug: ifeanyi-ubah
+    aliases:
+      - Ifeanyi Ubah
+      - FC Ifeanyi Ubah
+      - Ifeanyi Ubah Football Club
+
+  - canonical: Ikorodu City FC
+    slug: ikorodu-city
+    aliases:
+      - Ikorodu City
+      - Ikorodu City Football Club
+
+  - canonical: JUTH FC
+    slug: juth
+    aliases:
+      - JUTH
+      - JUTH Football Club
+
+  - canonical: Jigawa Golden Stars FC
+    slug: jigawa-golden-stars
+    aliases:
+      - Jigawa Golden Stars
+      - Jigawa Golden Stars FC
+
+  - canonical: Kada City FC
+    slug: kada-city
+    aliases:
+      - Kada City
+      - Kada City Football Club
+
+  - canonical: Kaduna United FC
+    slug: kaduna-united
+    aliases:
+      - Kaduna United
+      - Kaduna United Football Club
+
+  - canonical: Kano Pillars FC
+    slug: kano-pillars
+    aliases:
+      - Kano Pillars
+      - Kano Pillars Football Club
+
+  - canonical: Katsina United FC
+    slug: katsina-united
+    aliases:
+      - Katsina United
+      - Katsina United Football Club
+
+  - canonical: Kwara United FC
+    slug: kwara-united
+    aliases:
+      - Kwara United
+      - Kwara United Football Club
+
+  - canonical: Lobi Stars FC
+    slug: lobi-stars
+    aliases:
+      - Lobi Stars
+      - Lobi Stars Football Club
+
+  - canonical: MFM FC
+    slug: mfm
+    aliases:
+      - MFM
+      - MFM Football Club
+      - Mountain of Fire FC
+
+  - canonical: Nasarawa United FC
+    slug: nasarawa-united
+    aliases:
+      - Nasarawa United
+      - Nasarawa United Football Club
+
+  - canonical: Nembe City FC
+    slug: nembe-city
+    aliases:
+      - Nembe City
+      - Nembe City Football Club
+
+  - canonical: Niger Tornadoes FC
+    slug: niger-tornadoes
+    aliases:
+      - Niger Tornadoes
+      - Niger Tornadoes Football Club
+
+  - canonical: Ocean Boys FC
+    slug: ocean-boys
+    aliases:
+      - Ocean Boys
+      - Ocean Boys Football Club
+
+  - canonical: Plateau United FC
+    slug: plateau-united
+    aliases:
+      - Plateau United
+      - Plateau United Football Club
+
+  - canonical: Ranchers Bees FC
+    slug: ranchers-bees
+    aliases:
+      - Ranchers Bees
+      - Ranchers Bees Football Club
+
+  - canonical: Rangers International FC
+    slug: rangers-intl
+    aliases:
+      - Rangers International
+      - Rangers Int'l FC
+      - Enugu Rangers
+      - Rangers FC
+
+  - canonical: Remo Stars FC
+    slug: remo-stars
+    aliases:
+      - Remo Stars
+      - Remo Stars Football Club
+
+  - canonical: Rising Stars FC
+    slug: rising-stars
+    aliases:
+      - Rising Stars
+      - Rising Stars Football Club
+
+  - canonical: Rivers United FC
+    slug: rivers-united
+    aliases:
+      - Rivers United
+      - Rivers United Football Club
+
+  - canonical: Sharks FC
+    slug: sharks
+    aliases:
+      - Sharks
+      - Sharks Football Club
+      - Sharks of Port Harcourt
+
+  - canonical: Shooting Stars SC
+    slug: shooting-stars
+    aliases:
+      - Shooting Stars
+      - Shooting Stars FC
+      - 3SC
+      - 3SC Ibadan
+
+  - canonical: Sporting Lagos FC
+    slug: sporting-lagos
+    aliases:
+      - Sporting Lagos
+      - Sporting Lagos Football Club
+
+  - canonical: Sunshine Stars FC
+    slug: sunshine-stars
+    aliases:
+      - Sunshine Stars
+      - Sunshine Stars Football Club
+
+  - canonical: Taraba FC
+    slug: taraba
+    aliases:
+      - Taraba
+      - Taraba Football Club
+
+  - canonical: Warri Wolves FC
+    slug: warri-wolves
+    aliases:
+      - Warri Wolves
+      - Warri Wolves Football Club
+
+  - canonical: Wikki Tourists FC
+    slug: wikki-tourists
+    aliases:
+      - Wikki Tourists
+      - Wikki Tourists Football Club
+
+  - canonical: Yobe Stars FC
+    slug: yobe-stars
+    aliases:
+      - Yobe Stars
+      - Yobe Stars Football Club
+
+  - canonical: Zamfara United FC
+    slug: zamfara-united
+    aliases:
+      - Zamfara United
+      - Zamfara United Football Club
