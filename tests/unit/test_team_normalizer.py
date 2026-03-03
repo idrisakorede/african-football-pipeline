@@ -13,16 +13,9 @@ from african_football.utils.team_normalizer import (
     REVIEW_THRESHOLD,
     TeamNormalizer,
 )
+from tests.helpers import write_canonical_yaml
 
-# ---------------------------- Helpers -------------------------------------------
-
-
-def write_canonical_yaml(path, teams: list) -> str:
-    """Write a canonical teams YAML file for testing."""
-    config_file = path / "teams.yaml"
-    with open(config_file, "w") as file:
-        yaml.dump({"teams": teams}, file)
-    return str(config_file)
+# ---------------------------- Helper -------------------------------------------
 
 
 def make_normalizer(tmp_path, teams: list) -> TeamNormalizer:
@@ -30,21 +23,6 @@ def make_normalizer(tmp_path, teams: list) -> TeamNormalizer:
     canonical_path = write_canonical_yaml(tmp_path, teams)
     review_log = tmp_path / "review.txt"
     return TeamNormalizer(canonical_path, review_log)
-
-
-SAMPLE_TEAMS = [
-    {
-        "canonical": "Enyimba FC",
-        "slug": "enyimba",
-        "aliases": ["Enyimba", "Enyimba International FC"],
-    },
-    {"canonical": "ENPPI SC", "slug": "enppi", "aliases": ["Enppi", "Enppi SC"]},
-    {
-        "canonical": "Orlando Pirates FC",
-        "slug": "orlando-pirates",
-        "aliases": ["Orlando", "Orlando pirates", "Orlando pirates FC"],
-    },
-]
 
 
 # ------------------------------ Initialisation -----------------------------------
@@ -70,8 +48,8 @@ class TestTeamNormalizerInit:
         with pytest.raises(ValueError):
             TeamNormalizer(bad_yaml, tmp_path / "review.txt")
 
-    def test_creates_review_log_directory(self, tmp_path):
-        canonical_path = write_canonical_yaml(tmp_path, SAMPLE_TEAMS)
+    def test_creates_review_log_directory(self, tmp_path, sample_teams):
+        canonical_path = write_canonical_yaml(tmp_path, sample_teams)
         review_log = tmp_path / "nested" / "dir" / "review.txt"
         TeamNormalizer(canonical_path, review_log)
         assert review_log.parent.exists()
@@ -83,20 +61,20 @@ class TestTeamNormalizerInit:
 class TestExactMatching:
     """Tests for exact alias matching."""
 
-    def test_resolves_canonical_name_exactly(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_resolves_canonical_name_exactly(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         assert normalizer.resolve("Enyimba FC") == "Enyimba FC"
 
-    def test_resolves_known_alias(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_resolves_known_alias(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         assert normalizer.resolve("Enyimba International FC") == "Enyimba FC"
 
-    def test_resolves_short_alias(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_resolves_short_alias(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         assert normalizer.resolve("Enppi") == "ENPPI SC"
 
-    def test_resolves_case_sensitive(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_resolves_case_sensitive(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         assert normalizer.resolve("orlando pirates") == "Orlando Pirates FC"
 
 
@@ -106,13 +84,15 @@ class TestExactMatching:
 class TestFuzzyMatching:
     """Tests for fuzzy match fallback behaviour."""
 
-    def test_resolves_close_spelling_variation(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_resolves_close_spelling_variation(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         result = normalizer.resolve("Enyimba Fc")
         assert result == "Enyimba FC"
 
-    def test_returns_original_for_completely_unknown_teams(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_returns_original_for_completely_unknown_teams(
+        self, tmp_path, sample_teams
+    ):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         result = normalizer.resolve("Blank FC")
         assert result == "Blank FC"
 
@@ -123,25 +103,25 @@ class TestFuzzyMatching:
 class TestReviewLog:
     """Tests for the unmatched team review log."""
 
-    def test_logs_unmatched_team(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_logs_unmatched_team(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         normalizer.resolve("Blank FC")
         log_content = normalizer.review_log_path.read_text()
         assert "Blank FC" in log_content
 
-    def test_log_contains_reason(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_log_contains_reason(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         normalizer.resolve("Blank FC")
         log_content = normalizer.review_log_path.read_text()
         assert "NO MATCH" in log_content
 
-    def test_exact_match_does_not_write_to_log(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_exact_match_does_not_write_to_log(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         normalizer.resolve("Orlando Pirates FC")
         assert not normalizer.review_log_path.exists()
 
-    def test_multiple_unmatches_teams_accumulate_in_logs(self, tmp_path):
-        normalizer = make_normalizer(tmp_path, SAMPLE_TEAMS)
+    def test_multiple_unmatches_teams_accumulate_in_logs(self, tmp_path, sample_teams):
+        normalizer = make_normalizer(tmp_path, sample_teams)
         normalizer.resolve("Zilch Team A")
         normalizer.resolve("Zilch Team B")
         log_content = normalizer.review_log_path.read_text()

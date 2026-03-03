@@ -10,7 +10,7 @@ import pytest
 
 from african_football.config.config_loader import load_leagues
 from african_football.models.league_model import LeagueConfig
-from tests.conftest import write_yaml
+from tests.helpers import write_yaml
 
 
 class TestLoadLeagues:
