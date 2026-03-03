@@ -67,45 +67,42 @@ class SeasonRecord:
 
     # ------------------------------- Post-scrape phase ----------------------------
 
+    scraped_at: str | None = None
+    records_extracted: int | None = None
+    checksum: str | None = None
+    pipeline_version: str | None = None
 
-scraped_at: str | None = None
-records_extracted: int | None = None
-checksum: str | None = None
-pipeline_version: str | None = None
+    def is_scrapeable(self) -> bool:
+        """
+        Return True if this season has data worth scraping.
 
+        Only COMPLETED seasons with a valid results URL are scrapeable.
 
-def is_scrapeable(self) -> bool:
-    """
-    Return True if this season has data worth scraping.
+        Returns:
+            True if status is COMPLETED and url is not None.
+        """
+        return self.status == SeasonStatus.COMPLETED and self.url is not None
 
-    Only COMPLETED seasons with a valid results URL are scrapeable.
+    def to_dict(self) -> dict:
+        """
+        Serialise the SeasonRecord to a dictionary for JSON storage.
 
-    Returns:
-        True if status is COMPLETED and url is not None.
-    """
-    return self.status == SeasonStatus.COMPLETED and self.url is not None
+        Converts SeasonStatus enum to its string value for
+        JSON compatibility.
 
-
-def to_dict(self) -> dict:
-    """
-    Serialise the SeasonRecord to a dictionary for JSON storage.
-
-    Converts SeasonStatus enum to its string value for
-    JSON compatibility.
-
-    Returns:
-        A dictionary representation of the SeasonRecord.
-    """
-    return {
-        "season": self.season,
-        "start_year": self.start_year,
-        "end_year": self.end_year,
-        "status": self.status.value,
-        "url": self.url,
-        "champion": self.champion,
-        "champion_url": self.champion_url,
-        "scraped_at": self.scraped_at,
-        "records_extracted": self.records_extracted,
-        "checksum": self.checksum,
-        "pipeline_version": self.pipeline_version,
-    }
+        Returns:
+            A dictionary representation of the SeasonRecord.
+        """
+        return {
+            "season": self.season,
+            "start_year": self.start_year,
+            "end_year": self.end_year,
+            "status": self.status.value,
+            "url": self.url,
+            "champion": self.champion,
+            "champion_url": self.champion_url,
+            "scraped_at": self.scraped_at,
+            "records_extracted": self.records_extracted,
+            "checksum": self.checksum,
+            "pipeline_version": self.pipeline_version,
+        }
