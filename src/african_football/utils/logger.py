@@ -79,16 +79,15 @@ class PipelineLogger:
         with open(self.log_file, "a", encoding="utf-8") as file:
             file.write(f"[{timestamp}] [{level}] {message}\n")
 
+    def log_section(self, title: str) -> None:
+        """
+        Write a section header to the log.
 
-def log_section(self, title: str) -> None:
-    """
-    Write a section header to the log.
+        Useful for separating major pipeline phases such as extraction,
+        validation, and saving.
 
-    Useful for separating major pipeline phases such as extraction,
-    validation, and saving.
-
-    Args:
-        title: The section title to display.
-    """
-    separator = "=" * 70
-    self.log(f"\n{separator}\n{title}\n{separator}")
+        Args:
+            title: The section title to display.
+        """
+        separator = "=" * 70
+        self.log(f"\n{separator}\n{title}\n{separator}")
