@@ -65,6 +65,9 @@ def parse_selection(user_input: str, max_index: int) -> list[int]:
     """
     cleaned = user_input.strip().lower()
 
+    if not cleaned:
+        return []
+
     if cleaned in ("all", "0"):
         return list(range(1, max_index + 1))
 
