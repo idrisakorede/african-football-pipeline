@@ -63,6 +63,11 @@ def sample_teams() -> list:
             "slug": "enyimba",
             "aliases": ["Enyimba", "Enyimba International FC"],
         },
+        {
+            "canonical": "Kano Pillars FC",
+            "slug": "kano-pillars",
+            "aliases": ["Kano Pillars", "Pillars FC"],
+        },
         {"canonical": "ENPPI SC", "slug": "enppi", "aliases": ["Enppi", "Enppi SC"]},
         {
             "canonical": "Orlando Pirates FC",
@@ -106,3 +111,23 @@ def ongoing_season() -> SeasonRecord:
         end_year=2026,
         status=SeasonStatus.ONGOING,
     )
+
+
+@pytest.fixture
+def sample_data() -> dict:
+    return {
+        "stages": [
+            {
+                "matches": [
+                    {
+                        "home_team": "Enyimba",
+                        "away_team": "Kano Pillars",
+                    },
+                    {
+                        "home_team": "Enyimba International FC",
+                        "away_team": "Pillars FC",
+                    },
+                ]
+            }
+        ]
+    }
