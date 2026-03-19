@@ -274,13 +274,12 @@ class FootballScraper:
                                 });
                             } else if (element.classList.contains('event__match')) {
                                 const matchId = element.id;
-                                const hasPenalty = element.querySelector(
+                                const stageBlock = element.querySelector(
                                     '.event__stage--block'
-                                ) !== null;
-                                const penaltyText = hasPenalty
-                                    ? element.querySelector(
-                                        '.event__stage--block'
-                                    ).textContent.trim()
+                                );
+                                const hasStageIndicator = stageBlock !== null;
+                                const stageIndicatorText = hasStageIndicator
+                                    ? stageBlock.textContent.trim()
                                     : null;
                                 const ftScores = element.querySelectorAll(
                                     '.event__part'
@@ -294,8 +293,8 @@ class FootballScraper:
                                 matches.push({
                                     type: 'match',
                                     id: matchId,
-                                    hasPenalty: hasPenalty,
-                                    penaltyText: penaltyText,
+                                    hasStageIndicator: hasStageIndicator,
+                                    stageIndicatorText: stageIndicatorText,
                                     ftHome: ftHome,
                                     ftAway: ftAway
                                 });
@@ -387,8 +386,7 @@ class FootballScraper:
                     current_round_name,
                     current_round_number,
                     stage_name,
-                    element.get("hasPenalty", False),
-                    element.get("penaltyText"),
+                    element.get("stageIndicatorText"),
                     element.get("ftHome"),
                     element.get("ftAway"),
                 )
@@ -403,8 +401,7 @@ class FootballScraper:
         round_name: Optional[str],
         round_number: Optional[int],
         stage_name: str,
-        has_penalty: bool = False,
-        penalty_text: Optional[str] = None,
+        stage_indicator: Optional[str] = None,
         ft_home: Optional[str] = None,
         ft_away: Optional[str] = None,
     ) -> Optional[dict[str, Any]]:
@@ -413,13 +410,14 @@ class FootballScraper:
 
         Args:
             element:         Playwright locator for the match element.
-            round_name:   Current round display name.
-            round_number: Current round number for sorting, or None.
-            stage_name:   Current stage name.
-            has_penalty:  Whether match was decided by penalties.
-            penalty_text: Raw penalty indicator text, or None.
-            ft_home:      Full-time home score before penalties, or None.
-            ft_away:      Full-time away score before penalties, or None.
+            round_name:      Current round display name.
+            round_number:    Current round number for sorting, or None.
+            stage_name:      Current stage name.
+            stage_indicator: Text from the stage indicator block, e.g.
+                             'Awrd' for awarded, 'pen.' for penalties,
+                             or None for regular matches.
+            ft_home:         Full-time home score before penalties, or None.
+            ft_away:         Full-time away score before penalties, or None.
 
         Returns:
             A match dictionary or None if extraction fails.
@@ -454,13 +452,29 @@ class FootballScraper:
                 "match_url": url,
             }
 
-            if has_penalty and ft_home is not None and ft_away is not None:
+            indicator = stage_indicator.lower() if stage_indicator else None
+
+            if indicator == "awrd":
+                # Awarded match
+                match_data["awarded"] = True
+                match_data["awarded_reason"] = "walkover"
+                match_data["penalty_shootout"] = False
+                match_data["penalty_winner"] = None
+                match_data["full_time_score"] = None
+
+            elif indicator and ft_home is not None and ft_away is not None:
+                # Penalty shootout
+                match_data["awarded"] = False
+                match_data["awarded_reason"] = None
                 match_data["full_time_score"] = f"{ft_home}-{ft_away}"
                 match_data["penalty_shootout"] = True
                 match_data["penalty_winner"] = (
                     "home" if home_score > away_score else "away"
                 )
             else:
+                # Regular Match
+                match_data["awarded"] = False
+                match_data["awarded_reason"] = None
                 match_data["full_time_score"] = None
                 match_data["penalty_shootout"] = False
                 match_data["penalty_winner"] = None
@@ -490,7 +504,11 @@ class FootballScraper:
         Returns:
             The same list with half_time_score populated where available.
         """
-        to_enrich = [(i, m) for i, m in enumerate(matches) if m.get("match_url")]
+        to_enrich = [
+            (i, m)
+            for i, m in enumerate(matches)
+            if m.get("match_url") and not m.get("awarded")
+        ]
         self.logger.log(f"Enriching {len(to_enrich)} matches with halftime scores")
 
         failed = await self._fetch_halftime_scores(page, to_enrich, 1)
@@ -503,8 +521,17 @@ class FootballScraper:
         ht_found = sum(1 for m in matches if m.get("half_time_score"))
         self.stats["ht_scores_found"] += ht_found
 
-        if failed:
-            for idx, m in failed:
+        # After all retry passes, find matches that still have no halftime score
+        missing_ht = [
+            (i, m)
+            for i, m in enumerate(matches)
+            if m.get("match_url")
+            and not m.get("awarded")
+            and m.get("half_time_score") is None
+        ]
+
+        if missing_ht:
+            for idx, m in missing_ht:
                 self.stats["ht_scores_failed"].append(
                     {
                         "match_index": idx + 1,
@@ -645,6 +672,14 @@ class FootballScraper:
             found = self.stats["ht_scores_found"]
             pct = found / total * 100 if total > 0 else 0
             lines.append(f"\nHalftime scores: {found}/{total} ({pct:.1f}%)")
+
+        if self.stats["ht_scores_failed"]:
+            lines.append("\nMissing halftime scores:")
+            for m in self.stats["ht_scores_failed"]:
+                lines.append(
+                    f"  - {m['home_team']} vs {m['away_team']} "
+                    f"({m['round']}) - {m['url']}"
+                )
 
         lines.extend(
             [
