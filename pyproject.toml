@@ -1,7 +1,7 @@
 [project]
 name = "african-football-leagues-pipeline"
-version = "0.1.0"
-description = "Add your description here"
+version = "1.0.0"
+description = "African football data pipeline — raw scraper to warehouse to lakehouse. Three-phase DE portfolio project."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -18,3 +18,10 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/african_football"]
