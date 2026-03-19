@@ -158,6 +158,18 @@ class TestFormatScore:
         }
         assert _format_score(match) == "0-0"
 
+    def test_awarded_match(self):
+        match = {
+            "home_score": "3",
+            "away_score": "0",
+            "awarded": True,
+            "awarded_reason": "walkover",
+            "penalty_shootout": False,
+            "half_time_score": None,
+            "full_time_score": None,
+        }
+        assert _format_score(match) == "3-0 (awarded)"
+
 
 # ------------------------------- Round Header Formatting ---------------------------------------
 
