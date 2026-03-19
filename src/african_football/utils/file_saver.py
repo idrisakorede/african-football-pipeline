@@ -64,7 +64,7 @@ def _compute_checksum(data: dict) -> str:
     Returns:
         A hex-encoded SHA256 digest string.
     """
-    serialised = json.dumps(data, sort_keys=True, ensure_ascii=True)
+    serialised = json.dumps(data, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(serialised.encode("utf-8")).hexdigest()
 
 
@@ -304,21 +304,39 @@ def _format_score(match: dict) -> str:
     """
     Format the score string for a match in TXT export.
 
-    Handles three cases:
-    - Penalty shootouts: shows pen result, full-time score, and halftime score
-    - Regular matches with halftime scores
-    - Regular matches without halftime scores
+    Handles four cases in priority order:
+    1. Awarded matches: score with '(awarded)' suffix
+    2. Penalty shootouts: pen result with full-time and halftime
+    3. Regular matches: score with optional halftime in brackets
+    4. Missing scores: returns 'vs' placeholder
 
-    Format for penalties: '4-3 pen (2-2 aet; 1-1)'
-    Format for regular:   '2-1 (1-0)'
-    Format for 0-0: '0-0'
+    Format examples:
+        Awarded:     '3-0 (awarded)'
+        Penalty:     '4-3 pen (2-2 aet; 1-1)'
+        With HT:     '2-1 (1-0)'
+        Without HT:  '2-1'
+        No scores:   'vs'
 
     Args:
-        match: A match dictionary containing score and metadata fields.
+        match: A match dictionary expected to contain:
+            - home_score:       Home team score as string, or None.
+            - away_score:       Away team score as string, or None.
+            - awarded:          Boolean, True if match was a walkover.
+            - penalty_shootout: Boolean, True if decided by penalties.
+            - full_time_score:  Full-time score before penalties, or None.
+            - half_time_score:  Halftime score string, or None.
 
     Returns:
-        A formatted score string or 'vs' if scores are unavailable.
+        A formatted score string for TXT export display.
     """
+
+    # Awarded Match
+    if match.get("awarded"):
+        if match.get("home_score") is not None and match.get("away_score") is not None:
+            return f"{match['home_score']}-{match['away_score']} (awarded)"
+        return "awarded"
+
+    # Penalty shootout
     if match.get("penalty_shootout") and match.get("full_time_score"):
         base = f"{match['home_score']}-{match['away_score']} pen"
         fulltime = match["full_time_score"]
