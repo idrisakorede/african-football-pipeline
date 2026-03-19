@@ -431,7 +431,8 @@ class FootballScraper:
             ).inner_text()
             home_score = await element.locator(".event__score--home").inner_text()
             away_score = await element.locator(".event__score--away").inner_text()
-            date = await element.locator("div.event__time").inner_text()
+            raw_date = await element.locator("div.event__time").inner_text()
+            date = raw_date.split("\n")[0].strip()
             link = await element.locator("a.eventRowLink").first.get_attribute("href")
             url = (
                 f"https://ng.soccerway.com{link}"
