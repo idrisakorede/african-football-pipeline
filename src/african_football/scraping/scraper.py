@@ -25,19 +25,6 @@ from african_football.utils.logger import PipelineLogger
 
 PIPELINE_VERSION = "1.0.0"
 
-PLAYOFF_ROUND_ORDER: dict[str, int] = {
-    "quarter-finals": 1,
-    "quarter-final": 1,
-    "quarterfinals": 1,
-    "quarterfinal": 1,
-    "semi-finals": 2,
-    "semi-final": 2,
-    "semifinals": 2,
-    "semifinal": 2,
-    "final": 3,
-    "finals": 3,
-}
-
 
 class FootballScraper:
     """
