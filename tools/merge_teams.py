@@ -129,6 +129,7 @@ def main():
             DATA_DIR / "exports" / league["country"] / league["code"] / "teams"
         )
         print(f"\nNo teams files found in '{exports_path}'")
+        return
 
     print(f"\n📁 Found {len(teams_files)} teams file(s):")
 
