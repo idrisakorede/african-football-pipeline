@@ -64,7 +64,7 @@ def select_league(tool_name: str = "TOOL") -> dict:
     print("\nSelect league:")
 
     for i, league in enumerate(leagues, 1):
-        print(f" {i}. {league['name']} ){league['country']}")
+        print(f" {i}. {league['name']} ({league['country']})")
 
     print("=" * 70 + "\n")
 
@@ -100,7 +100,7 @@ def find_available_files(league: dict, subfolder: str = "") -> list[str]:
     if not exports_dir.exists():
         return []
 
-    return sorted(str(file) for file in exports_dir.glob(".*txt"))
+    return sorted(str(file) for file in exports_dir.glob("*.txt"))
 
 
 def select_file(available_files: list[str]) -> str | None:
