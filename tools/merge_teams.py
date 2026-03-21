@@ -32,13 +32,15 @@ def read_teams_from_file(filepath: str) -> set:
     teams = set()
 
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            for line in f:
+        with open(filepath, "r", encoding="utf-8") as file:
+            for line in file:
                 team = line.strip()
                 if team:  # Skip empty lines
                     teams.add(team)
-    except Exception as e:
-        print(f"⚠️  Error reading {Path(filepath).name}: {e}")
+    except FileNotFoundError:
+        print(f"File not found: {Path(filepath).name}")
+    except UnicodeDecodeError as e:
+        print(f"Encoding error reading {Path(filepath).name}: {e}")
 
     return teams
 
@@ -59,13 +61,16 @@ def save_all_teams(teams: set, output_file: str, league_name: str) -> None:
     # Sort teams alphabetically
     sorted_teams = sorted(teams)
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(f"# All Unique Teams in {league_name} History\n")
-        f.write(f"# Total: {len(sorted_teams)} teams\n")
-        f.write("#" + "=" * 68 + "\n\n")
+    try:
+        with open(output_file, "w", encoding="utf-8") as file:
+            file.write(f"# All Unique Teams in {league_name} History\n")
+            file.write(f"# Total: {len(sorted_teams)} teams\n")
+            file.write("#" + "=" * 68 + "\n\n")
 
-        for team in sorted_teams:
-            f.write(f"{team}\n")
+            for team in sorted_teams:
+                file.write(f"{team}\n")
+    except OSError as e:
+        print(f"Error writing to {output_file}: {e}")
 
     print(f"✅ Saved {len(sorted_teams)} unique teams to: {output_file}")
 
@@ -88,18 +93,21 @@ def save_teams_with_stats(
     # Sort teams by number of appearances (descending), then alphabetically
     sorted_teams = sorted(teams, key=lambda t: (-len(team_appearances[t]), t))
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(f"# All {league_name} Teams with Appearance Statistics\n")
-        f.write(f"# Total: {len(sorted_teams)} unique teams\n")
-        f.write("#" + "=" * 68 + "\n\n")
+    try:
+        with open(output_file, "w", encoding="utf-8") as file:
+            file.write(f"# All {league_name} Teams with Appearance Statistics\n")
+            file.write(f"# Total: {len(sorted_teams)} unique teams\n")
+            file.write("#" + "=" * 68 + "\n\n")
 
-        for team in sorted_teams:
-            seasons = team_appearances[team]
-            season_count = len(seasons)
-            seasons_str = ", ".join(sorted(seasons))
+            for team in sorted_teams:
+                seasons = team_appearances[team]
+                season_count = len(seasons)
+                seasons_str = ", ".join(sorted(seasons))
 
-            f.write(f"{team}\n")
-            f.write(f"  Seasons: {season_count} ({seasons_str})\n\n")
+                file.write(f"{team}\n")
+                file.write(f"  Seasons: {season_count} ({seasons_str})\n\n")
+    except OSError as e:
+        print(f"Error writing to {output_file}: {e}")
 
     print(f"✅ Saved detailed statistics to: {output_file}")
 
@@ -171,14 +179,14 @@ def main():
         team for team in all_teams if len(team_appearances[team]) == len(teams_files)
     ]
     if all_seasons_teams:
-        print(f"\n🏆 Teams in ALL {len(teams_files)} seasons: {len(all_seasons_teams)}")
+        print(f"\n Teams in ALL {len(teams_files)} seasons: {len(all_seasons_teams)}")
         for team in sorted(all_seasons_teams):
             print(f"   • {team}")
 
     # Find teams that appeared in only one season
     one_season_teams = [team for team in all_teams if len(team_appearances[team]) == 1]
     if one_season_teams:
-        print(f"\n📊 Teams in only ONE season: {len(one_season_teams)}")
+        print(f"\n Teams in only ONE season: {len(one_season_teams)}")
 
     print("=" * 70)
 
@@ -208,7 +216,7 @@ def main():
 
     # Display all teams
     print("\n" + "=" * 70)
-    print(f"ALL UNIQUE {league} TEAMS (Alphabetically Sorted)")
+    print(f"ALL UNIQUE {league['name']} TEAMS (Alphabetically Sorted)")
     print("=" * 70)
     for i, team in enumerate(sorted(all_teams), 1):
         appearances = len(team_appearances[team])

@@ -5,6 +5,7 @@ Contains league selection, path configuration and files finder used across
 all tools/ scripts. Not part of the automated pipeline.
 """
 
+import sys
 from pathlib import Path
 
 import yaml
@@ -21,9 +22,17 @@ def load_league_choices() -> list[dict]:
     Returns:
         A list of dicts with code, name, country, and submission_code.
     """
+    try:
+        with open(CONFIG_PATH, encoding="utf-8") as file:
+            raw = yaml.safe_load(file)
 
-    with open(CONFIG_PATH, encoding="utf-8") as file:
-        raw = yaml.safe_load(file)
+    except FileNotFoundError:
+        print(f"Config file not found: {CONFIG_PATH}")
+        sys.exit(1)
+
+    except yaml.YAMLError as e:
+        print(f"Error parsing {CONFIG_PATH}: {e}")
+        sys.exit(1)
 
     return [
         {
@@ -115,12 +124,15 @@ def select_file(available_files: list[str]) -> str | None:
 
         if user_input.lower() == "all":
             return "all"
-
-        if user_input.isdigit():
-            file_number = int(user_input)
-            if 1 <= file_number <= len(available_files):
-                return available_files[file_number - 1]
-            print(f"Invalid number. Please enter 1-{len(available_files)}\n")
+        try:
+            if user_input.isdigit():
+                file_number = int(user_input)
+                if 1 <= file_number <= len(available_files):
+                    return available_files[file_number - 1]
+                print(f"Invalid number. Please enter 1-{len(available_files)}\n")
+                continue
+        except (ValueError, IndexError):
+            print("Invalid input. Enter a number or 'all'")
             continue
 
         matched = [file for file in available_files if Path(file).name == user_input]

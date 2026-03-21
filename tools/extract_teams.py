@@ -35,37 +35,46 @@ def extract_teams_from_file(filepath: str) -> set[str]:
     """
     teams: set[str] = set()
 
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            if line.startswith(("=", "#", "»")):
-                continue
-
-            if any(
-                keyword in line.lower()
-                for keyword in ["group", "stage", "playoff", "round", "phase"]
-            ):
-                if len(line.strip()) < 50 and " v " not in line:
+    try:
+        with open(filepath, "r", encoding="utf-8") as file:
+            for line in file:
+                if line.startswith(("=", "#", "»")):
                     continue
 
-            stripped = line.strip()
-            if stripped and len(stripped) < 15 and " v " not in line:
-                continue
+                if any(
+                    keyword in line.lower()
+                    for keyword in ["group", "stage", "playoff", "round", "phase"]
+                ):
+                    if len(line.strip()) < 50 and " v " not in line:
+                        continue
 
-            if " v " in line:
-                parts = line.split(" v ")
-                if len(parts) >= 2:
-                    home_section = parts[0]
-                    home_team = re.sub(r"^\s+\d+[\.:]\d+\s+", "", home_section).strip()
+                stripped = line.strip()
+                if stripped and len(stripped) < 15 and " v " not in line:
+                    continue
 
-                    away_section = parts[1]
-                    away_team = re.split(
-                        r"\s{2,}|\s+\d+-\d+|\s+vs\s+|\s+\[", away_section
-                    )[0].strip()
+                if " v " in line:
+                    parts = line.split(" v ")
+                    if len(parts) >= 2:
+                        home_section = parts[0]
+                        home_team = re.sub(
+                            r"^\s+\d+[\.:]\d+\s+", "", home_section
+                        ).strip()
 
-                    if home_team and len(home_team) > 2:
-                        teams.add(home_team)
-                    if away_team and len(away_team) > 2:
-                        teams.add(away_team)
+                        away_section = parts[1]
+                        away_team = re.split(
+                            r"\s{2,}|\s+\d+-\d+|\s+vs\s+|\s+\[", away_section
+                        )[0].strip()
+
+                        if home_team and len(home_team) > 2:
+                            teams.add(home_team)
+                        if away_team and len(away_team) > 2:
+                            teams.add(away_team)
+    except FileNotFoundError:
+        print(f"File not found: {filepath}")
+        return teams
+    except UnicodeDecodeError as e:
+        print(f"Encoding error reading {filepath}: {e}")
+        return teams
 
     return teams
 
@@ -81,11 +90,13 @@ def save_teams_to_file(teams: set[str], output_file: str) -> None:
     output_path = Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        for team in sorted_teams:
-            f.write(f"{team}\n")
-
-    print(f"Saved {len(sorted_teams)} teams to: {output_file}")
+    try:
+        with open(output_file, "w", encoding="utf-8") as file:
+            for team in sorted_teams:
+                file.write(f"{team}\n")
+        print(f"Saved {len(sorted_teams)} teams to: {output_file}")
+    except OSError as e:
+        print(f"Error writing to {output_file}: {e}")
 
 
 def process_single_file(filepath: str, league: dict) -> tuple:

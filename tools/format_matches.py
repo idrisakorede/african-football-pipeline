@@ -148,12 +148,17 @@ def find_max_team_name_length(filepath: str) -> tuple:
     max_home = 0
     max_away = 0
 
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            match = parse_match_line(line)
-            if match:
-                max_home = max(max_home, len(match["home_team"]))
-                max_away = max(max_away, len(match["away_team"]))
+    try:
+        with open(filepath, "r", encoding="utf-8") as file:
+            for line in file:
+                match = parse_match_line(line)
+                if match:
+                    max_home = max(max_home, len(match["home_team"]))
+                    max_away = max(max_away, len(match["away_team"]))
+    except FileNotFoundError:
+        print(f"File not found: {filepath}")
+    except UnicodeDecodeError as e:
+        print(f"Encoding error reading {filepath}: {e}")
 
     return max_home, max_away
 
@@ -171,28 +176,38 @@ def format_file(input_file: str, output_file: Optional[str] = None):
     lines = []
 
     # Read and format
-    with open(input_file, "r", encoding="utf-8") as f:
-        for line in f:
-            if " v " not in line:
-                lines.append(line.rstrip("\n"))
-                continue
+    try:
+        with open(input_file, "r", encoding="utf-8") as file:
+            for line in file:
+                if " v " not in line:
+                    lines.append(line.rstrip("\n"))
+                    continue
 
-            match = parse_match_line(line)
-            if match:
-                formatted = format_match_line(match, home_width, away_width)
-                lines.append(formatted)
-            else:
-                lines.append(line.rstrip("\n"))
+                match = parse_match_line(line)
+                if match:
+                    formatted = format_match_line(match, home_width, away_width)
+                    lines.append(formatted)
+                else:
+                    lines.append(line.rstrip("\n"))
+    except FileNotFoundError:
+        print(f"File not found: {input_file}")
+        return
+    except UnicodeDecodeError as e:
+        print(f"Encoding error reading {input_file}: {e}")
+        return
 
     # Apply spacing
     lines = ensure_blank_lines(lines)
 
     # Write output
-    with open(output_file, "w", encoding="utf-8") as f:
-        for line in lines:
-            f.write(line + "\n")
+    try:
+        with open(output_file, "w", encoding="utf-8") as file:
+            for line in lines:
+                file.write(line + "\n")
+        print(f"✅ Formatted: {output_file}")
+    except OSError as e:
+        print(f"Error writing to {output_file}: {e}")
 
-    print(f"✅ Formatted: {output_file}")
     print(f"   Max home team: {max_home} chars")
     print(f"   Max away team: {max_away} chars")
 
@@ -202,7 +217,7 @@ def main():
     print("\n" + "=" * 70)
     print("  MATCH DATA FORMATTER - Manual Utility")
     print("=" * 70)
-    print("\n⚠️  NOTE: This utility is for manual fixes only.")
+    print("\n  NOTE: This utility is for manual fixes only.")
     print("   The scraper already outputs properly formatted files.")
     print("=" * 70)
 
@@ -230,19 +245,12 @@ def main():
     for i, file in enumerate(available_files, 1):
         print(f"  {i}. {Path(file).name}")
 
-        print(
-            "\nTip: you can also pass a file path directly: "
-            "uv run python tools/format_matches.py path/to/file.txt"
-        )
+    print(
+        "\nTip: you can also pass a file path directly: "
+        "uv run python tools/format_matches.py path/to/file.txt"
+    )
 
     choice = select_file(available_files)
-
-    print(f"\nFound {len(available_files)} match file(s):")
-    for i, file in enumerate(available_files, 1):
-        print(f"  {i}. {Path(file).name}")
-        print(
-            "\nTip: you can also pass a file path directly: uv run python tools/format_matches.py path/to/file.txt"
-        )
 
     if choice is None:
         return

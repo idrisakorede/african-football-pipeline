@@ -161,8 +161,12 @@ def save_json(
     # Attach checksum for CDC and auditability
     data_copy["checksum"] = _compute_checksum(data_copy)
 
-    with open(output_path, "w", encoding="utf-8") as file:
-        json.dump(data_copy, file, indent=2, ensure_ascii=False)
+    try:
+        with open(output_path, "w", encoding="utf-8") as file:
+            json.dump(data_copy, file, indent=2, ensure_ascii=False)
+    except OSError as e:
+        print(f"Error writing to {output_path}: {e}")
+        return output_path
 
     return output_path
 
@@ -200,57 +204,60 @@ def save_txt(
         m["away_team"] for m in all_matches
     }
 
-    with open(output_path, "w", encoding="utf-8") as file:
-        file.write(f"= {data['season']}\n")
-        file.write(f"# Teams      {len(teams)}\n")
-        file.write(f"# Matches    {len(all_matches)}\n")
+    try:
+        with open(output_path, "w", encoding="utf-8") as file:
+            file.write(f"= {data['season']}\n")
+            file.write(f"# Teams      {len(teams)}\n")
+            file.write(f"# Matches    {len(all_matches)}\n")
 
-        if len(data["stages"]) > 1:
-            stage_info = "  ".join(
-                f"{s['stage_name']} ({s['total_matches']})"
-                for s in reversed(data["stages"])
-            )
-            file.write(f"# Stages     {stage_info}\n")
-
-        file.write("\n")
-
-        for stage in reversed(data["stages"]):
             if len(data["stages"]) > 1:
-                sep = "=" * 70
-                file.write(f"\n{sep}\n  {stage['stage_name'].upper()}\n{sep}\n\n")
+                stage_info = "  ".join(
+                    f"{s['stage_name']} ({s['total_matches']})"
+                    for s in reversed(data["stages"])
+                )
+                file.write(f"# Stages     {stage_info}\n")
 
-            rounds = defaultdict(list)
-            for m in stage["matches"]:
-                round_key = m.get("round") or "Unknown Round"
-                rounds[round_key].append(m)
+            file.write("\n")
 
-            sorted_rounds = sorted(
-                rounds.items(),
-                key=lambda item: _round_sort_key(item[0], item[1]),
-            )
+            for stage in reversed(data["stages"]):
+                if len(data["stages"]) > 1:
+                    sep = "=" * 70
+                    file.write(f"\n{sep}\n  {stage['stage_name'].upper()}\n{sep}\n\n")
 
-            for round_name, round_matches in sorted_rounds:
-                file.write(f"» {_format_round_header(round_name)}\n")
+                rounds = defaultdict(list)
+                for m in stage["matches"]:
+                    round_key = m.get("round") or "Unknown Round"
+                    rounds[round_key].append(m)
 
-                dates = defaultdict(list)
-                for m in sorted(round_matches, key=lambda x: x.get("date") or ""):
-                    date = m["date"].split()[0] if m["date"] else "Unknown"
-                    dates[date].append(m)
+                sorted_rounds = sorted(
+                    rounds.items(),
+                    key=lambda item: _round_sort_key(item[0], item[1]),
+                )
 
-                for date in sorted(dates.keys()):
-                    file.write(f"  {date}\n")
-                    for m in dates[date]:
-                        time = (
-                            m["date"].split()[1]
-                            if m["date"] and len(m["date"].split()) > 1
-                            else "15.00"
-                        )
-                        score = _format_score(m)
-                        file.write(
-                            f"    {time:6} {m['home_team']:24} v "
-                            f"{m['away_team']:24} {score}\n"
-                        )
-                file.write("\n")
+                for round_name, round_matches in sorted_rounds:
+                    file.write(f"» {_format_round_header(round_name)}\n")
+
+                    dates = defaultdict(list)
+                    for m in sorted(round_matches, key=lambda x: x.get("date") or ""):
+                        date = m["date"].split()[0] if m["date"] else "Unknown"
+                        dates[date].append(m)
+
+                    for date in sorted(dates.keys()):
+                        file.write(f"  {date}\n")
+                        for m in dates[date]:
+                            time = (
+                                m["date"].split()[1]
+                                if m["date"] and len(m["date"].split()) > 1
+                                else "15.00"
+                            )
+                            score = _format_score(m)
+                            file.write(
+                                f"    {time:6} {m['home_team']:24} v "
+                                f"{m['away_team']:24} {score}\n"
+                            )
+                    file.write("\n")
+    except OSError as e:
+        print(f"Error writing to {output_path}: {e}")
 
     return output_path
 
