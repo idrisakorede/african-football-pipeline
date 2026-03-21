@@ -4,8 +4,8 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "african-football-leagues-pipeline"
-version = "0.1.0"
-source = { virtual = "." }
+version = "1.0.0"
+source = { editable = "." }
 dependencies = [
     { name = "playwright" },
     { name = "pyyaml" },
