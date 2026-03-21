@@ -4,6 +4,17 @@ An end-to-end data engineering pipeline scraping football match data across Afri
 
 **Phase 1** (current) delivers a fully functional local pipeline: config-driven scraping, season discovery, team name normalisation, and structured file exports — all built with SE best practices including typed Python, comprehensive testing, and conventional commits.
 
+## Table of Contents
+
+- [Architecture](#architecture)
+- [Data Flow](#data-flow)
+- [Getting Started](#getting-started)
+- [Data Quality](#data-quality)
+- [Retry Logic](#retry-logic)
+- [Currently Supported Leagues](#currently-supported-leagues)
+- [Project Phases](#project-phases)
+- [Tech Stack](#tech-stack)
+
 ## Architecture
 
 ```
@@ -35,6 +46,8 @@ data/
 ├── exports/{country}/{league}/   ← Human-readable TXT exports
 └── logs/unmatched_teams/         ← Flagged names for manual curation
 ```
+
+> **Why this structure for Phase 1?** The project is separated into models, config, scraping, and utils as independent modules because Phase 2 requires them as separate importable components. Airflow DAGs need to import `SeasonDiscoverer`, `FootballScraper`, and `file_saver` as isolated tasks. Building that separation now means Phase 2 is wiring, not rewriting. If this were a Phase 1-only project, a flatter structure would work fine.
 
 ### Design Decisions
 
@@ -82,7 +95,7 @@ file_saver ──→ data/raw/{country}/{league}/{season}.json    (immutable, ch
 ### Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/african-football-pipeline.git
+git clone https://github.com/idrisakorede/african-football-pipeline.git
 cd african-football-pipeline
 
 # Install dependencies
