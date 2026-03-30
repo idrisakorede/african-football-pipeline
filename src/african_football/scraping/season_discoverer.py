@@ -92,7 +92,8 @@ class SeasonDiscoverer:
         """
         if self._browser is None:
             raise RuntimeError(
-                "Browser not initiated. Use 'async with SeasonDiscoverer(...)' to ensure the browser is started before calling discover()."
+                "Browser not initiated. Use 'async with SeasonDiscoverer(...)' "
+                "to ensure the browser is started before calling discover()."
             )
 
         archive_url = build_archive_url(self.league.country, self.league.slug)
@@ -105,6 +106,18 @@ class SeasonDiscoverer:
         try:
             await page.goto(archive_url, timeout=70000)
             await page.wait_for_load_state("networkidle")
+
+            try:
+                await page.wait_for_selector(
+                    "div.archiveTable__row--entry",
+                    timeout=30000,
+                )
+            except Exception:
+                self.logger.log(
+                    "Archive rows did not appear within 30 seconds",
+                    level="WARNING",
+                )
+
             seasons = await self._extract_seasons(page)
 
         finally:
@@ -126,7 +139,7 @@ class SeasonDiscoverer:
         Returns:
             A list of season dictionaries for all completed seasons.
         """
-        rows = await page.locator("div.archiveLatte__row").all()
+        rows = await page.locator("div.archiveTable__row--entry").all()
         seasons = []
 
         for row in rows:
@@ -150,7 +163,7 @@ class SeasonDiscoverer:
         Returns:
             A SeasonRecord or None if the season is ongoing or malformed.
         """
-        season_link = row.locator("div.archiveLatte__season a")
+        season_link = row.locator("a.archiveTable__column--link")
 
         if await season_link.count() == 0:
             return None
@@ -211,15 +224,12 @@ class SeasonDiscoverer:
         """
 
         # Check for clickable winner link
-        winner_link = row.locator(
-            "div.archiveLatte__winnerBlock a.archiveLatte__text--clickable"
-        )
+        winner_link = row.locator("a.archiveTable__winner-content")
         if await winner_link.count() > 0:
             name = (await winner_link.inner_text()).strip()
             href = await winner_link.get_attribute("href")
             champion_url = f"{BASE_URL}{href}" if href else None
             return name, champion_url
-
         return None, None
 
     async def _is_no_winner(self, row: Any) -> bool:
@@ -232,11 +242,9 @@ class SeasonDiscoverer:
         Returns:
             True if the row contains explicit 'No winner' text.
         """
-        no_winner_div = row.locator(
-            "div.archiveLatte__winnerBlock div.archiveLatte__text"
-        )
-        if await no_winner_div.count() > 0:
-            text = (await no_winner_div.inner_text()).strip().lower()
+        winner_div = row.locator("div.archiveTable__winner")
+        if await winner_div.count() > 0:
+            text = (await winner_div.inner_text()).strip().lower()
             return text == "no winner"
         return False
 
